@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Traffic Forecast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        #forecast-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 400px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button[type="button"] {
+            background-color: #0056b3; 
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button[type="button"]:hover {
+            background-color: #FF0000;
+        }
+
+        #forecast-result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #forecast-result p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FF0000; /* Red color */
+        }
+
+        #forecast-table {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #forecast-table table {
+            width: 50%;
+            margin-left: 320px;
+            border-collapse: collapse;
+        }
+
+        #forecast-table th, #forecast-table td {
+            border: 3px solid #ccc;
+            padding: 8px;
+        }
+
+        #forecast-table th {
+            background-color: #f2f2f2;
+        }
+
+        #forecast-graph {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Internet Traffic Forecast</h1>
+    <form id="forecast-form">
+        <label for="input-date">Enter The Date:</label>
+        <input type="text" id="input-date" name="input_date" placeholder="YYYY-MM-DD">
+        <button type="button" id="forecast-button">Forecast</button>
+    </form>
+    <div id="forecast-result"></div>
+    <div id="forecast-table"></div>
+    <div id="forecast-graph"></div>
+
+    <script>
+        document.getElementById("forecast-button").addEventListener("click", function () {
+            var inputDate = document.getElementById("input-date").value;
+            fetch("/forecast?input_date=" + inputDate)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    var forecastResult = document.getElementById("forecast-result");
+                    var forecastTable = document.getElementById("forecast-table");
+                    var forecastGraph = document.getElementById("forecast-graph");
+
+                    if (data.error) {
+                        forecastResult.innerHTML = "<p>Error: " + data.error + "</p>";
+                        forecastTable.innerHTML = "";
+                        forecastGraph.innerHTML = "";
+                    } else {
+                        var forecastValues = data.forecast.map(function (value) {
+                            return parseInt(value);
+                        });
+
+                        forecastResult.innerHTML = "<p>Forecast Result: </p>";
+
+                        var tableHTML = "<table><thead><tr><th>Dates</th><th>Forecast</th></tr></thead><tbody>";
+
+                        for (var i = 0; i < forecastValues.length; i++) {
+                            tableHTML += "<tr><td>" + data.forecast_dates[i] + "</td><td>" + forecastValues[i] + "</td></tr>";
+                        }
+
+                        tableHTML += "</tbody></table>";
+                        forecastTable.innerHTML = tableHTML;
+
+                        forecastGraph.innerHTML = '<img src="data:image/png;base64,' + data.plot + '" alt="Actual vs Forecasted">';
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
