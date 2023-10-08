@@ -9,8 +9,8 @@ import base64
 app = Flask(__name__, template_folder='.')
 
 # Load data and model
-df = pd.read_csv("C:/Users/Gujar/Desktop/Projects/Data Science/Internet Traffic Prediction/data.csv")
-loaded_model = pickle.load(open('C:/Users/Gujar/Desktop/Projects/Data Science/Internet Traffic Prediction/Internet_Traffic_Trained_Model.sav', 'rb'))
+df = pd.read_csv("data.csv")
+loaded_model = pickle.load(open('Internet_Traffic_Trained_Model.sav', 'rb'))
 df['Date'] = pd.to_datetime(df['Date']).dt.date
 data_index = df['Date'].tolist()
 
